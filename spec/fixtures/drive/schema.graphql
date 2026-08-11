@@ -1,0 +1,16 @@
+"""
+A person in the directory.
+"""
+type Person {
+  id: ID!
+  name: String!
+  friends(limit: Int = 10): [Person!]!
+}
+
+type Query {
+  """
+  Find a person by ID.
+  """
+  person(id: ID!): Person
+  search(term: String!): [Person!]!
+}

@@ -1,0 +1,64 @@
+{
+  "name": "ide-graphql full feature matrix",
+  "adapter": "ide-graphql",
+  "project": "fixtures/drive",
+  "file": "fixtures/drive/query.graphql",
+  "grammarScope": "source.graphql",
+  "checks": [
+    {
+      "name": "diagnostics",
+      "kind": "diagnostics",
+      "minLength": 1,
+      "expect": { "path": "*.message", "matches": "unknownField" }
+    },
+    {
+      "name": "completion",
+      "method": "textDocument/completion",
+      "position": [4, 4],
+      "params": { "context": { "triggerKind": 1 } },
+      "expect": { "path": "items.*.label", "includes": "friends" }
+    },
+    {
+      "name": "completion resolve",
+      "method": "completionItem/resolve",
+      "document": false,
+      "paramsFrom": {
+        "$": {
+          "check": "completion",
+          "path": "items",
+          "find": { "path": "label", "equals": "name" }
+        }
+      },
+      "expect": { "path": "label", "equals": "name" }
+    },
+    {
+      "name": "hover",
+      "method": "textDocument/hover",
+      "position": [1, 3],
+      "expect": { "path": "contents", "matches": "Find a person by ID" }
+    },
+    {
+      "name": "definition",
+      "method": "textDocument/definition",
+      "position": [1, 3],
+      "expect": { "path": "*.uri", "matches": "schema\\.graphql$" }
+    },
+    {
+      "name": "document symbols",
+      "method": "textDocument/documentSymbol",
+      "expect": { "path": "*.name", "includes": "PersonCard" }
+    },
+    {
+      "name": "workspace symbols",
+      "method": "workspace/symbol",
+      "document": false,
+      "params": { "query": "Person" },
+      "expect": { "path": "*.name", "includes": "Person" }
+    },
+    {
+      "name": "restart lifecycle",
+      "kind": "restart",
+      "expect": { "path": "current", "equals": "running" }
+    }
+  ]
+}

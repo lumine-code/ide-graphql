@@ -1,0 +1,11 @@
+query PersonCard($id: ID!) {
+  person(id: $id) {
+    id
+    name
+    unknownField
+  }
+}
+
+fragment PersonName on Person {
+  name
+}

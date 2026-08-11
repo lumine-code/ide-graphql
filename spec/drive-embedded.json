@@ -1,0 +1,42 @@
+{
+  "name": "ide-graphql embedded TypeScript matrix",
+  "adapter": "ide-graphql",
+  "project": "fixtures/drive",
+  "file": "fixtures/drive/embedded.ts",
+  "grammarScope": "source.ts",
+  "checks": [
+    {
+      "name": "embedded diagnostics",
+      "kind": "diagnostics",
+      "minLength": 1,
+      "expect": {
+        "path": "*.message",
+        "matches": "unknownEmbeddedField"
+      }
+    },
+    {
+      "name": "embedded completion",
+      "method": "textDocument/completion",
+      "position": [4, 6],
+      "params": { "context": { "triggerKind": 1 } },
+      "expect": { "path": "items.*.label", "includes": "friends" }
+    },
+    {
+      "name": "embedded hover",
+      "method": "textDocument/hover",
+      "position": [2, 5],
+      "expect": { "path": "contents", "matches": "Find a person by ID" }
+    },
+    {
+      "name": "embedded definition",
+      "method": "textDocument/definition",
+      "position": [2, 5],
+      "expect": { "path": "*.uri", "matches": "schema\\.graphql$" }
+    },
+    {
+      "name": "embedded symbols",
+      "method": "textDocument/documentSymbol",
+      "expect": { "path": "*.name", "includes": "EmbeddedPerson" }
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "name": "ide-graphql",
+  "author": "lumine-code",
+  "description": "GraphQL language-server adapter.",
+  "repository": "https://github.com/lumine-code/ide-graphql",
+  "bugs": {
+    "url": "https://github.com/lumine-code/ide-graphql/issues"
+  },
+  "keywords": [
+    "language-server",
+    "lsp",
+    "schema",
+    "apollo",
+    "api",
+    "federation",
+    "intellisense"
+  ],
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "lumine": "^1.0.0"
+  },
+  "main": "./lib/main",
+  "files": [
+    "lib",
+    "spec"
+  ],
+  "scripts": {
+    "test": "lumine --test spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "consumedServices": {
+    "ide-client": {
+      "versions": {
+        "^1.0.0": "consumeIdeClient"
+      }
+    }
+  },
+  "dependencies": {
+    "graphql": "16.14.2",
+    "graphql-language-service-cli": "3.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.2.2",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
+    "vscode-jsonrpc": "^9.0.1"
+  },
+  "configSchema": {
+    "serverPath": {
+      "title": "Server Path",
+      "description": "Absolute path to a `graphql-lsp` executable. Leave empty to use the bundled server.",
+      "type": "string",
+      "default": ""
+    },
+    "features": {
+      "title": "Features",
+      "description": "Which parts of the GraphQL server the editor uses. Turning one off hands it to the next server serving the same file.",
+      "type": "object",
+      "properties": {
+        "diagnostics": {
+          "title": "Diagnostics",
+          "description": "Report GraphQL syntax and schema validation errors in the linter.",
+          "type": "boolean",
+          "default": true
+        },
+        "autocomplete": {
+          "title": "Autocomplete",
+          "description": "Offer schema fields, arguments, types, directives and variables.",
+          "type": "boolean",
+          "default": true
+        },
+        "hover": {
+          "title": "Hover",
+          "description": "Show schema documentation and type information on hover.",
+          "type": "boolean",
+          "default": true
+        },
+        "definition": {
+          "title": "Go To Definition",
+          "description": "Jump to schema types, fields and fragment definitions.",
+          "type": "boolean",
+          "default": true
+        },
+        "symbols": {
+          "title": "Symbols",
+          "description": "Serve document and workspace GraphQL symbols to go-to-symbol.",
+          "type": "boolean",
+          "default": true
+        },
+        "outline": {
+          "title": "Outline",
+          "description": "Fill the outline panel with operations, fragments and schema definitions.",
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "config": {
+      "title": "GraphQL Config",
+      "description": "How the server discovers the project's GraphQL schema and documents.",
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "title": "Config File",
+          "description": "Exact GraphQL config file path. Leave empty to discover one from the project root.",
+          "type": "string",
+          "default": ""
+        },
+        "configName": {
+          "title": "Config Name",
+          "description": "Configuration filename prefix used during discovery.",
+          "type": "string",
+          "default": "graphql"
+        },
+        "legacy": {
+          "title": "Legacy Config",
+          "description": "Also discover configuration formats used by graphql-config 2.",
+          "type": "boolean",
+          "default": true
+        },
+        "dotEnvPath": {
+          "title": "Environment File",
+          "description": "Path to a dotenv file loaded before resolving schema pointers. Leave empty to skip it.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "languageService": {
+      "title": "Language Service",
+      "description": "Schema cache and logging behavior used by the GraphQL server.",
+      "type": "object",
+      "properties": {
+        "cacheSchemaFileForLookup": {
+          "title": "Schema Lookup Cache",
+          "description": "Cache a generated SDL schema for navigation, decide automatically, or disable the cache.",
+          "type": "string",
+          "enum": [
+            "auto",
+            "enabled",
+            "disabled"
+          ],
+          "default": "auto"
+        },
+        "schemaCacheTTL": {
+          "title": "Schema Cache Lifetime",
+          "description": "Minimum schema cache lifetime in milliseconds.",
+          "type": "integer",
+          "minimum": 0,
+          "default": 30000
+        },
+        "debug": {
+          "title": "Debug Logging",
+          "description": "Write verbose GraphQL server output to the language-server log.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}
