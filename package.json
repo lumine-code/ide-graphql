@@ -20,6 +20,9 @@
   "engines": {
     "lumine": "^1.0.0"
   },
+  "backgroundTips": [
+    "{{packageName}} discovers schemas and projects through your GraphQL configuration file."
+  ],
   "main": "./lib/main",
   "files": [
     "lib",
