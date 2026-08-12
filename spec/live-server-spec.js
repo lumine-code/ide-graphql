@@ -3,7 +3,13 @@ const os = require("os");
 const path = require("path");
 const { fileURLToPath } = require("url");
 const main = require("../lib/main");
-const { LiveLspClient, fileUri, position, positionParams } = require("./helpers/live-lsp-client");
+const {
+  LiveLspClient,
+  fileUri,
+  position,
+  positionParams,
+  replaceOnce,
+} = require("./helpers/live-lsp-client");
 
 const registerAdapter = () => {
   let adapter;
@@ -147,7 +153,7 @@ describe("ide-graphql bundled server", () => {
       "initial diagnostics",
     );
 
-    const fixed = source.replace("    unknownField\n", "");
+    const fixed = replaceOnce(source, "    unknownField\n");
     client.change(uri, fixed, 2);
     await client.waitFor(
       () =>
