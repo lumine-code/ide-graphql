@@ -7,6 +7,7 @@ Registers the bundled GraphQL Language Service with `ide-client`, providing sche
 ## Features
 
 - **Bundled server**: pins `graphql-language-service-cli` and its compatible GraphQL runtime exactly, with an optional custom executable path.
+- **Managed upgrade**: installs a newer server from npm when you want one, and removing it returns to the bundled copy.
 - **Schema intelligence**: validates operations and schema definitions and completes fields, arguments, types, directives, and variables.
 - **Navigation and documentation**: follows schema fields, types, and fragments and shows their documentation on hover.
 - **Project structure**: supplies document and workspace symbols from GraphQL config projects.
