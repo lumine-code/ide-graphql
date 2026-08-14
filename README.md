@@ -17,11 +17,11 @@ Registers the bundled GraphQL Language Service with `ide-client`, providing sche
 
 ## Installation
 
-To install `ide-graphql`, search for _ide-graphql_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/ide-graphql`.
+To install `ide-graphql` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-graphql`.
 
 ## Services
 
-- **ide-client** (`^1.0.0`): consumed to register the GraphQL adapter with the editor's language-server client.
+- `ide-client`: consumed to register the GraphQL adapter with the editor's language-server client.
 
 ## Contributing
 
