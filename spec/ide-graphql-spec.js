@@ -3,7 +3,7 @@ const path = require("path");
 const main = require("../lib/main");
 const { resolveServer } = require("../lib/server");
 
-const FEATURES = ["diagnostics", "autocomplete", "hover", "definition", "symbols", "outline"];
+const FEATURES = ["diagnostics", "autocomplete", "hover", "definition", "symbols"];
 
 const registerAdapter = (overrides = {}) => {
   let adapter;

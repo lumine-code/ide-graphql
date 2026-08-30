@@ -97,14 +97,7 @@
         },
         "symbols": {
           "title": "Symbols",
-          "description": "Serve document and workspace GraphQL symbols to go-to-symbol.",
-          "scopeResolution": "grammar",
-          "type": "boolean",
-          "default": true
-        },
-        "outline": {
-          "title": "Outline",
-          "description": "Fill the outline panel with operations, fragments and schema definitions.",
+          "description": "Serve document and workspace GraphQL symbols to navigation features.",
           "scopeResolution": "grammar",
           "type": "boolean",
           "default": true
