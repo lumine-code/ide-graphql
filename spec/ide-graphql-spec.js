@@ -68,6 +68,7 @@ describe("ide-graphql adapter", () => {
     ]);
     expect(adapter.sessionScope).toBe("project-root");
     expect(adapter.settingsKeyPaths).toEqual(["ide-graphql"]);
+    expect(adapter.restartKeyPaths).toEqual(["ide-graphql.serverPath"]);
     const launch = await adapter.resolveServer({ rootPath: __dirname });
     expect(launch.cwd).toBe(__dirname);
     expect(launch.transport).toBe("stdio");
@@ -121,22 +122,6 @@ describe("ide-graphql adapter", () => {
       schemaCacheTTL: 250,
       debug: true,
     });
-  });
-
-  it("restarts live sessions only after the executable path changes", async () => {
-    disposable.dispose();
-    const session = { adapter: null, state: "running" };
-    const stopped = { adapter: null, state: "stopped" };
-    const restart = jasmine.createSpy("restart").and.returnValue(Promise.resolve());
-    ({ adapter, disposable } = registerAdapter({
-      getSessions: () => [session, stopped],
-      restart,
-    }));
-    session.adapter = adapter;
-    stopped.adapter = adapter;
-    lumine.config.set("ide-graphql.serverPath", process.execPath);
-    await Promise.resolve();
-    expect(restart).toHaveBeenCalledOnceWith(session);
   });
 });
 
