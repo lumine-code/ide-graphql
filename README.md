@@ -14,10 +14,11 @@ Registers the bundled GraphQL Language Service with `ide-client`, providing sche
 - **Embedded documents**: understands supported GraphQL template tags inside JavaScript, TypeScript, JSX, TSX, and Vue files.
 - **Configuration**: controls GraphQL config discovery, legacy config support, dotenv loading, schema caching, and debug logging.
 - **Feature switches**: each shared IDE capability can be handed to another server serving the same file.
+- **Project sessions**: keeps one server and GraphQL config cache per project root instead of merging unrelated schemas.
 
 ## Installation
 
-To install `ide-graphql` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-graphql`.
+Install `ide-client` first. Then install `ide-graphql` from the Install pane of the Lumine settings, or run `lumine --install lumine-code/ide-graphql`.
 
 ## Services
 

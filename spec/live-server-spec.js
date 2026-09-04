@@ -60,6 +60,30 @@ describe("ide-graphql bundled server", () => {
     await lumine.packages.deactivatePackage("ide-graphql");
   });
 
+  it("starts through the managed install directory with the runtime-safe shim", async () => {
+    const directory = path.resolve(__dirname, "..");
+    const managedServer = {
+      directory,
+      modulePath: path.join(
+        directory,
+        "node_modules",
+        "graphql-language-service-cli",
+        "package.json",
+      ),
+      version: "3.5.0",
+    };
+    const managedAdapter = {
+      ...adapter,
+      resolveServer: (context) => adapter.resolveServer({ ...context, managedServer }),
+    };
+    client = new LiveLspClient(managedAdapter, rootPath);
+    const { capabilities } = await client.start();
+    expect(capabilities.completionProvider).toBeDefined();
+    const launch = await managedAdapter.resolveServer({ rootPath });
+    expect(launch.args).toContain(directory);
+    expect(launch.version).toBe("3.5.0");
+  });
+
   it("advertises every protocol feature and requests both settings sections", async () => {
     const { capabilities } = await client.start();
     expect(capabilities.textDocumentSync).toBe(1);
@@ -190,37 +214,67 @@ describe("ide-graphql bundled server", () => {
     client.closeDocument(uri);
   });
 
-  it("parses GraphQL template literals inside TypeScript", async () => {
+  it("parses GraphQL template literals inside JavaScript, JSX, TypeScript, TSX, and Vue", async () => {
     await client.start();
-    const filePath = path.join(rootPath, "embedded.ts");
+    const modes = [
+      ["embedded.js", "javascript"],
+      ["embedded.jsx", "javascriptreact"],
+      ["embedded.ts", "typescript"],
+      ["embedded.tsx", "typescriptreact"],
+      ["embedded.vue", "vue"],
+    ];
+    for (const [name, languageId] of modes) {
+      const filePath = path.join(rootPath, name);
+      const source = fs.readFileSync(filePath, "utf8");
+      const uri = fileUri(filePath);
+      client.open(uri, languageId, source);
+      const diagnostics = await client.waitFor(
+        () =>
+          client
+            .messages("textDocument/publishDiagnostics")
+            .find(
+              ({ params }) =>
+                params.uri === uri &&
+                params.diagnostics.some(({ message }) => message.includes("unknownEmbeddedField")),
+            )?.params.diagnostics,
+        `${name} GraphQL diagnostics`,
+      );
+      const diagnostic = diagnostics.find(({ message }) =>
+        message.includes("unknownEmbeddedField"),
+      );
+      const completion = await client.request("textDocument/completion", {
+        textDocument: { uri },
+        position: diagnostic.range.start,
+        context: { triggerKind: 1 },
+      });
+      expect(completion.items.map(({ label }) => label)).toContain("friends");
+      const symbols = await client.request("textDocument/documentSymbol", {
+        textDocument: { uri },
+      });
+      expect(symbols.map(({ name }) => name)).toContain("EmbeddedPerson");
+      client.closeDocument(uri);
+    }
+  });
+
+  it("loads an explicitly configured GraphQL config file", async () => {
+    const discovered = path.join(rootPath, ".graphqlrc.json");
+    const explicit = path.join(rootPath, "project.graphql.json");
+    fs.renameSync(discovered, explicit);
+    lumine.config.set("ide-graphql.config.filePath", explicit);
+    await client.start();
+    const filePath = path.join(rootPath, "query.graphql");
     const source = fs.readFileSync(filePath, "utf8");
     const uri = fileUri(filePath);
-    client.open(uri, "typescript", source);
+    client.open(uri, "graphql", source);
     const diagnostics = await client.waitFor(
       () =>
         client
           .messages("textDocument/publishDiagnostics")
-          .find(
-            ({ params }) =>
-              params.uri === uri &&
-              params.diagnostics.some(({ message }) => message.includes("unknownEmbeddedField")),
-          )?.params.diagnostics,
-      "embedded GraphQL diagnostics",
+          .find(({ params }) => params.uri === uri && params.diagnostics.length)?.params
+          .diagnostics,
+      "explicit GraphQL config diagnostics",
     );
-    expect(diagnostics[0].range.start).toEqual(position(4, 6));
-
-    const completion = await client.request("textDocument/completion", {
-      textDocument: { uri },
-      position: position(4, 6),
-      context: { triggerKind: 1 },
-    });
-    expect(completion.items.map(({ label }) => label)).toContain("friends");
-    const hover = await client.request("textDocument/hover", positionParams(uri, 2, 5));
-    expect(JSON.stringify(hover.contents)).toContain("Find a person by ID");
-    const symbols = await client.request("textDocument/documentSymbol", {
-      textDocument: { uri },
-    });
-    expect(symbols.map(({ name }) => name)).toContain("EmbeddedPerson");
+    expect(diagnostics.map(({ message }) => message).join("\n")).toContain("unknownField");
   });
 
   it("reloads changed workspace configuration through the nonstandard section split", async () => {

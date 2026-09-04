@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const main = require("../lib/main");
-const { resolveServer } = require("../lib/server");
+const { resolveServer, managedServer } = require("../lib/server");
 
 const FEATURES = ["diagnostics", "autocomplete", "hover", "definition", "symbols"];
 
@@ -38,6 +38,28 @@ describe("ide-graphql server resolution", () => {
     expect(launch.env.ELECTRON_RUN_AS_NODE).toBe("1");
     expect(require("graphql-language-service-cli/package.json").version).toBe("3.5.0");
     expect(require("graphql/package.json").version).toBe("16.14.2");
+  });
+
+  it("routes a managed install through the bundled runtime-safe shim", async () => {
+    const directory = path.resolve(__dirname, "..");
+    const managed = {
+      directory,
+      modulePath: path.join(
+        directory,
+        "node_modules",
+        "graphql-language-service-cli",
+        "package.json",
+      ),
+      version: "3.5.0",
+    };
+    const launch = await resolveServer("", __dirname, managed);
+    expect(launch.command).toBe(process.execPath);
+    expect(launch.args).toEqual([require.resolve("../lib/start-server"), __dirname, directory]);
+    expect(launch.version).toBe("3.5.0");
+    expect(managedServer.packages).toEqual([
+      { name: "graphql-language-service-cli" },
+      { name: "graphql", version: require("../package.json").dependencies.graphql },
+    ]);
   });
 });
 
@@ -83,6 +105,18 @@ describe("ide-graphql adapter", () => {
     expect(adapter.getWorkspaceConfiguration("editor")).toBeUndefined();
   });
 
+  it("refuses the server's unsafe multi-root adoption claim", () => {
+    const transformed = adapter.transformServerCapabilities({
+      hoverProvider: true,
+      workspace: { workspaceFolders: { supported: true, changeNotifications: true } },
+    });
+    expect(transformed.hoverProvider).toBe(true);
+    expect(transformed.workspace.workspaceFolders).toEqual({
+      supported: false,
+      changeNotifications: false,
+    });
+  });
+
   it("maps GraphQL config discovery without replacing empty values", () => {
     lumine.config.set("ide-graphql.config.filePath", "config/project.json");
     lumine.config.set("ide-graphql.config.configName", "platform");
@@ -92,7 +126,7 @@ describe("ide-graphql adapter", () => {
     expect(config).toEqual({
       load: {
         rootDir: "",
-        filePath: "config/project.json",
+        filepath: "config/project.json",
         configName: "platform",
         legacy: false,
       },
@@ -100,8 +134,8 @@ describe("ide-graphql adapter", () => {
     });
     lumine.config.set("ide-graphql.config.filePath", "");
     lumine.config.set("ide-graphql.config.dotEnvPath", "");
-    expect(config.load.filePath).toBe("config/project.json");
-    expect(adapter.getSettings()["graphql-config"].load.filePath).toBeUndefined();
+    expect(config.load.filepath).toBe("config/project.json");
+    expect(adapter.getSettings()["graphql-config"].load.filepath).toBeUndefined();
     expect(adapter.getSettings()["graphql-config"].dotEnvPath).toBeUndefined();
   });
 
