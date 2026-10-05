@@ -89,6 +89,7 @@ describe("ide-graphql adapter", () => {
       "text.html.vue",
     ]);
     expect(adapter.sessionScope).toBe("project-root");
+    expect(adapter.documentSymbolScopes).toEqual(["source.graphql"]);
     expect(adapter.settingsKeyPaths).toEqual(["ide-graphql"]);
     expect(adapter.restartKeyPaths).toEqual(["ide-graphql.serverPath"]);
     const launch = await adapter.resolveServer({ rootPath: __dirname });

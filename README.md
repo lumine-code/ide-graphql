@@ -2,7 +2,7 @@
 
 GraphQL language-server adapter.
 
-Registers the bundled GraphQL Language Service with `ide-client`, providing schema-aware diagnostics, completion, hover, navigation, and symbols for GraphQL documents and GraphQL template literals in JavaScript, TypeScript, and Vue files.
+Registers the bundled GraphQL Language Service with `ide-client`, providing schema-aware diagnostics, completion, hover, navigation, and symbols for GraphQL documents, plus language features for GraphQL template literals in JavaScript, TypeScript, and Vue files.
 
 ## Features
 
@@ -15,6 +15,8 @@ Registers the bundled GraphQL Language Service with `ide-client`, providing sche
 - **Configuration**: controls GraphQL config discovery, legacy config support, dotenv loading, schema caching, and debug logging.
 - **Feature switches**: each shared IDE capability can be handed to another server serving the same file.
 - **Project sessions**: keeps one server and GraphQL config cache per project root instead of merging unrelated schemas.
+
+Whole-document symbols belong to GraphQL buffers. GraphQL template literals retain completion, hover and navigation inside their JavaScript, TypeScript or Vue host, whose document symbols come from the host language. Workspace symbol search remains available for GraphQL config projects.
 
 ## Installation
 
