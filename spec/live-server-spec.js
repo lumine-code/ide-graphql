@@ -75,7 +75,8 @@ describe("ide-graphql bundled server", () => {
     };
     const managedAdapter = {
       ...adapter,
-      resolveServer: (context) => adapter.resolveServer({ ...context, managedServer }),
+      resolveServer: (context) =>
+        adapter.resolveServer({ ...context, getManagedServer: () => managedServer }),
     };
     client = new LiveLspClient(managedAdapter, rootPath);
     const { capabilities } = await client.start();
