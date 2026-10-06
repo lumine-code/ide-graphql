@@ -1,3 +1,4 @@
+const { serverContext } = require("./helpers/server-context");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -79,8 +80,8 @@ describe("ide-graphql bundled server", () => {
     client = new LiveLspClient(managedAdapter, rootPath);
     const { capabilities } = await client.start();
     expect(capabilities.completionProvider).toBeDefined();
-    const launch = await managedAdapter.resolveServer({ rootPath });
-    expect(launch.args).toContain(directory);
+    const launch = await managedAdapter.resolveServer(serverContext({ rootPath }));
+    expect(launch.args).toContain(managedServer.modulePath);
     expect(launch.version).toBe("3.5.0");
   });
 

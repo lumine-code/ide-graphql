@@ -1,7 +1,10 @@
+const { serverContext } = require("./helpers/server-context");
 const fs = require("fs");
 const path = require("path");
 const main = require("../lib/main");
-const { resolveServer, managedServer } = require("../lib/server");
+const { resolveServer: resolveServerWithContext, managedServer } = require("../lib/server");
+const resolveServer = (configuredPath, rootPath, managedServer = null) =>
+  resolveServerWithContext(serverContext({ rootPath, managedServer }), configuredPath);
 
 const FEATURES = ["diagnostics", "autocomplete", "hover", "definition", "symbols"];
 
@@ -23,10 +26,12 @@ const registerAdapter = (overrides = {}) => {
 describe("ide-graphql server resolution", () => {
   it("passes the project root and stream transport to a custom executable", async () => {
     const launch = await resolveServer(process.execPath, __dirname);
-    expect(launch).toEqual({
-      command: process.execPath,
-      args: ["server", "--method", "stream", "--configDir", __dirname],
-    });
+    expect(launch).toEqual(
+      jasmine.objectContaining({
+        command: process.execPath,
+        args: ["server", "--method", "stream", "--configDir", __dirname],
+      }),
+    );
   });
 
   it("launches the exact bundled CLI through Electron's Node runtime", async () => {
@@ -54,12 +59,26 @@ describe("ide-graphql server resolution", () => {
     };
     const launch = await resolveServer("", __dirname, managed);
     expect(launch.command).toBe(process.execPath);
-    expect(launch.args).toEqual([require.resolve("../lib/start-server"), __dirname, directory]);
+    expect(launch.args).toEqual([
+      require.resolve("../lib/start-server"),
+      __dirname,
+      managed.modulePath,
+    ]);
     expect(launch.version).toBe("3.5.0");
     expect(managedServer.packages).toEqual([
       { name: "graphql-language-service-cli" },
       { name: "graphql", version: require("../package.json").dependencies.graphql },
     ]);
+  });
+
+  it("refuses a missing managed CLI instead of running the bundled copy", async () => {
+    await expectAsync(
+      resolveServer("", __dirname, {
+        directory: path.join(__dirname, "missing-managed"),
+        modulePath: path.join(__dirname, "missing-managed", "package.json"),
+        version: "9.9.9",
+      }),
+    ).toBeRejected();
   });
 });
 
@@ -92,7 +111,7 @@ describe("ide-graphql adapter", () => {
     expect(adapter.documentSymbolScopes).toEqual(["source.graphql"]);
     expect(adapter.settingsKeyPaths).toEqual(["ide-graphql"]);
     expect(adapter.restartKeyPaths).toEqual(["ide-graphql.serverPath"]);
-    const launch = await adapter.resolveServer({ rootPath: __dirname });
+    const launch = await adapter.resolveServer(serverContext({ rootPath: __dirname }));
     expect(launch.cwd).toBe(__dirname);
     expect(launch.transport).toBe("stdio");
     expect(launch.args).toContain(__dirname);
@@ -231,5 +250,13 @@ describe("ide-graphql package assets", () => {
   it("has no legacy editor imports or branding", () => {
     for (const file of ["README.md", "package.json", "lib/main.js"])
       expect(read(file)).not.toMatch(/require\(["']atom["']\)|\bPulsar\b|atom-ide/);
+  });
+});
+
+describe("ide-graphql shared server resolution", () => {
+  it("preserves an unavailable selection as null", async () => {
+    const { resolveServer: resolveWithContext } = require("../lib/server");
+    const resolver = { select: jasmine.createSpy("select").and.resolveTo(null) };
+    expect(await resolveWithContext({ rootPath: __dirname, resolver }, "")).toBeNull();
   });
 });
