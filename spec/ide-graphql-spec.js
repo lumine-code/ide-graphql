@@ -98,12 +98,13 @@ describe("ide-graphql adapter", () => {
     expect(launch.args).toContain(__dirname);
   });
 
-  it("answers the two exact configuration sections requested upstream", () => {
+  it("keeps both native namespaces in the canonical settings tree", () => {
+    lumine.config.set("ide-graphql.config.filePath", "graphql.config.json");
+    lumine.config.set("ide-graphql.languageService.debug", true);
     const all = adapter.getSettings();
-    expect(adapter.getWorkspaceConfiguration()).toEqual(all);
-    expect(adapter.getWorkspaceConfiguration("graphql-config")).toEqual(all["graphql-config"]);
-    expect(adapter.getWorkspaceConfiguration("vscode-graphql")).toEqual(all["vscode-graphql"]);
-    expect(adapter.getWorkspaceConfiguration("editor")).toBeUndefined();
+    expect(all["graphql-config"].load.filepath).toBe("graphql.config.json");
+    expect(all["vscode-graphql"].debug).toBe(true);
+    expect(adapter.getWorkspaceConfiguration).toBeUndefined();
   });
 
   it("refuses the server's unsafe multi-root adoption claim", () => {

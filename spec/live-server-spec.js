@@ -292,6 +292,6 @@ describe("ide-graphql bundled server", () => {
       .slice(previousRequests)
       .map(({ section }) => section);
     expect(latest).toEqual(jasmine.arrayContaining(["graphql-config", "vscode-graphql"]));
-    expect(adapter.getWorkspaceConfiguration("vscode-graphql").debug).toBe(true);
+    expect(adapter.getSettings()["vscode-graphql"].debug).toBe(true);
   });
 });
