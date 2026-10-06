@@ -24,6 +24,10 @@ To install `ide-graphql` search for it in the Install pane of the Lumine setting
 
 Install `ide` first.
 
+## Usage
+
+Bundled and managed npm installations keep the official upstream server and use the same dependency policy. See [dependency security](docs/security.md) for the tested fixes and the accepted upstream exception.
+
 ## Services
 
 - `ide`: consumed to register the GraphQL adapter with the editor's language-server client.

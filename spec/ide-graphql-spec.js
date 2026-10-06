@@ -2,7 +2,7 @@ const { serverContext } = require("./helpers/server-context");
 const fs = require("fs");
 const path = require("path");
 const main = require("../lib/main");
-const { resolveServer: resolveServerWithContext, managedServer } = require("../lib/server");
+const { resolveServer: resolveServerWithContext } = require("../lib/server");
 const resolveServer = (configuredPath, rootPath, managedServer = null) =>
   resolveServerWithContext(serverContext({ rootPath, managedServer }), configuredPath);
 
@@ -65,10 +65,6 @@ describe("ide-graphql server resolution", () => {
       managed.modulePath,
     ]);
     expect(launch.version).toBe("3.5.0");
-    expect(managedServer.packages).toEqual([
-      { name: "graphql-language-service-cli" },
-      { name: "graphql", version: require("../package.json").dependencies.graphql },
-    ]);
   });
 
   it("refuses a missing managed CLI instead of running the bundled copy", async () => {

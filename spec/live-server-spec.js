@@ -62,7 +62,7 @@ describe("ide-graphql bundled server", () => {
   });
 
   it("starts through the managed install directory with the runtime-safe shim", async () => {
-    const directory = path.resolve(__dirname, "..");
+    const directory = process.env.LUMINE_TEST_GRAPHQL_MANAGED_PATH || path.resolve(__dirname, "..");
     const managedServer = {
       directory,
       modulePath: path.join(

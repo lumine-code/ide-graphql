@@ -38,6 +38,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Lint
         run: npm run lint
+      - name: Check dependency advisories
+        run: npm run audit:check
       - name: Check formatting
         run: npm run format:check
       - name: Check package contents
