@@ -2,7 +2,7 @@
 
 GraphQL language-server adapter.
 
-Registers the bundled GraphQL Language Service with `ide-client`, providing schema-aware diagnostics, completion, hover, navigation, and symbols for GraphQL documents, plus language features for GraphQL template literals in JavaScript, TypeScript, and Vue files.
+Registers the bundled GraphQL Language Service with `ide`, providing schema-aware diagnostics, completion, hover, navigation, and symbols for GraphQL documents, plus language features for GraphQL template literals in JavaScript, TypeScript, and Vue files.
 
 ## Features
 
@@ -22,11 +22,11 @@ Whole-document symbols belong to GraphQL buffers. GraphQL template literals reta
 
 To install `ide-graphql` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-graphql`.
 
-Install `ide-client` first.
+Install `ide` first.
 
 ## Services
 
-- `ide-client`: consumed to register the GraphQL adapter with the editor's language-server client.
+- `ide`: consumed to register the GraphQL adapter with the editor's language-server client.
 
 ## Contributing
 

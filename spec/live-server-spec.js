@@ -14,7 +14,7 @@ const {
 
 const registerAdapter = () => {
   let adapter;
-  const disposable = main.consumeIdeClient({
+  const disposable = main.consumeIde({
     registerAdapter(registered) {
       adapter = registered;
       return { dispose() {} };
