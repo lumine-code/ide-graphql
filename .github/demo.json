@@ -1,0 +1,16 @@
+{
+  "title": "ide-graphql",
+  "description": "GraphQL validates a query against the local schema and flags an unknown field.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "549efeca3aace546e738036a3dc06843191c4fdb",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "GraphQL validates a query against the local schema and flags an unknown field.",
+      "width": 1100,
+      "height": 490
+    }
+  ]
+}

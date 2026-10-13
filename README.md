@@ -18,6 +18,8 @@ Registers the bundled GraphQL Language Service with `ide`, providing schema-awar
 
 Whole-document symbols belong to GraphQL buffers. GraphQL template literals retain completion, hover and navigation inside their JavaScript, TypeScript or Vue host, whose document symbols come from the host language. Workspace symbol search remains available for GraphQL config projects.
 
+![GraphQL validates a query against the local schema and flags an unknown field.](.github/demo.png)
+
 ## Installation
 
 To install `ide-graphql` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-graphql`.
