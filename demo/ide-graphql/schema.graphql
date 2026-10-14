@@ -1,0 +1,2 @@
+type Query { signal(id: ID!): Signal }
+type Signal { id: ID!, name: String!, amplitude: Float! }

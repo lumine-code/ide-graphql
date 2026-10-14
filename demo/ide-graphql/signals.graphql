@@ -1,0 +1,8 @@
+query SignalDetails {
+  signal(id: "demo") {
+    id
+    name
+    amplitude
+    frequency
+  }
+}
