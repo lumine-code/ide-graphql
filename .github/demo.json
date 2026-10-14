@@ -1,16 +1,104 @@
 {
   "title": "ide-graphql",
   "description": "GraphQL validates a query against the local schema and flags an unknown field.",
-  "recordedOn": "2026-10-13",
-  "sourceRevision": "549efeca3aace546e738036a3dc06843191c4fdb",
+  "recordedOn": "2026-10-14",
+  "sourceRevision": "5e58c37387a84f3cfd1c5b03d4854da0ef3de4c5",
+  "themeSourceRevision": "7fbd047a87ecf1367c896b19ff270cdc28d319f7",
   "mode": "normal",
   "fontSettings": "default",
+  "scenario": "demo.js",
+  "recipeHash": "c7fbc64bb629f6c6a9a4fd111110ecb91630072d9ae8840693e3cf08ef22c6aa",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "electron": "44.7.0",
+    "chrome": "152.0.7977.130",
+    "devicePixelRatio": 1,
+    "locale": "en-GB",
+    "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
+    "fontSize": 14,
+    "themes": ["one-day-syntax", "one-day-ui"]
+  },
+  "viewport": { "width": 1100, "height": 490 },
+  "cornerRadius": 10,
+  "sources": {
+    "editor": {
+      "revision": "8be8f86075ad93df038610d82b3ac6d99329957d",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "package": {
+      "revision": "5e58c37387a84f3cfd1c5b03d4854da0ef3de4c5",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "ide-graphql": {
+      "revision": "5e58c37387a84f3cfd1c5b03d4854da0ef3de4c5",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "documentation-view": {
+      "revision": "eedd6f69e19677399ddd9617858da255bb8f189c",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "hover": {
+      "revision": "4db1205d5c41405ba1d5c0d741eeaf3399e3693f",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "ide": {
+      "revision": "812c09829d25abb79f6292280d1eb54fc80b6c82",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "language-graphql": {
+      "revision": "b52bf336ef7ec1ca50372e79a19f482f30547fdf",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "linter": {
+      "revision": "adec0e9d64ffe64f9e041df825324efc0795601b",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "linter-panel": {
+      "revision": "52b4727794bf840757d2c6ec818329f954ecfb25",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "marker": {
+      "revision": "bb4fc8fec8c9d09fe59db9b0d70352ff33cde8f8",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "one-theme": {
+      "revision": "7fbd047a87ecf1367c896b19ff270cdc28d319f7",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "fixtures": [
+    {
+      "file": "ide-graphql/graphql.config.json",
+      "sha256": "b2dc7baf101bd1d993e9adaad8664844b74f0ba0425a17f010e59474d190785a"
+    },
+    {
+      "file": "ide-graphql/schema.graphql",
+      "sha256": "b91a6a908f8cd66d51cfeb18d9cf3a7c5247ed369d29e96ae39942d3b7d656c0"
+    },
+    {
+      "file": "ide-graphql/signals.graphql",
+      "sha256": "808b12d666251810324e9b12441be4a8d7b548d7151896f2bcad94336b776ee4"
+    }
+  ],
   "images": [
     {
       "file": "demo.png",
       "label": "GraphQL validates a query against the local schema and flags an unknown field.",
       "width": 1100,
-      "height": 490
+      "height": 490,
+      "sha256": "cb5fb674f1a3c2a7c97088e53778f7febd377784f33fb03a2c3221e1330be8a4"
     }
   ]
 }
