@@ -14,8 +14,10 @@ describe("GraphQL managed dependency policy", () => {
     signal = new AbortController().signal;
     api = {
       signal,
-      npmPackageLatestVersion: jasmine.createSpy("latest").and.resolveTo("3.5.0"),
-      npmPackageInstalledVersion: jasmine.createSpy("installed").and.returnValue("3.5.0"),
+      npmPackageLatestVersion: jasmine
+        .createSpy("latest")
+        .and.callFake(async (_name, options) => (options?.tag === "rc" ? "4.0.0-rc.2" : "3.5.0")),
+      npmPackageInstalledVersion: jasmine.createSpy("installed").and.returnValue("4.0.0-rc.2"),
       npmInstallPackage: jasmine.createSpy("install").and.callFake(async () => {
         const manifest = JSON.parse(
           fs.readFileSync(path.join(storagePath, "package.json"), "utf8"),
@@ -30,26 +32,46 @@ describe("GraphQL managed dependency policy", () => {
   afterEach(() => fs.rmSync(storagePath, { recursive: true, force: true }));
 
   it("seeds dependency fixes before installing the runtime and requested official CLI", async () => {
-    const result = await installServer({ storagePath, version: "3.5.0", api, signal });
+    const result = await installServer({ storagePath, version: "4.0.0-rc.2", api, signal });
     expect(api.npmPackageLatestVersion).not.toHaveBeenCalled();
     expect(api.npmInstallPackage.calls.allArgs()).toEqual([
-      ["graphql", "16.14.2", storagePath, { signal }],
-      ["graphql-language-service-cli", "3.5.0", storagePath, { signal }],
+      ["graphql", "17.0.2", storagePath, { signal }],
+      ["graphql-language-service-cli", "4.0.0-rc.2", storagePath, { signal }],
     ]);
     expect(result).toEqual({
       module: "node_modules/graphql-language-service-cli/package.json",
-      version: "3.5.0",
+      version: "4.0.0-rc.2",
     });
   });
 
   it("discovers the latest official CLI and records its installed version", async () => {
-    api.npmPackageInstalledVersion.and.returnValue("3.5.1");
+    api.npmPackageInstalledVersion.and.returnValue("4.0.0-rc.2");
     const result = await installServer({ storagePath, api, signal });
-    expect(api.npmPackageLatestVersion).toHaveBeenCalledOnceWith("graphql-language-service-cli", {
+    expect(api.npmPackageLatestVersion).toHaveBeenCalledWith("graphql-language-service-cli", {
       signal,
     });
-    expect(result.version).toBe("3.5.1");
-    expect(await latestServerVersion(api)).toBe("3.5.0");
+    expect(api.npmPackageLatestVersion).toHaveBeenCalledWith("graphql-language-service-cli", {
+      signal,
+      tag: "rc",
+    });
+    expect(result.version).toBe("4.0.0-rc.2");
+    expect(await latestServerVersion(api)).toBe("4.0.0-rc.2");
+  });
+
+  it("uses a compatible stable release once it supersedes the release candidate", async () => {
+    api.npmPackageLatestVersion.and.resolveTo("4.0.0");
+    expect(await latestServerVersion(api)).toBe("4.0.0");
+    expect(api.npmPackageLatestVersion).toHaveBeenCalledOnceWith(
+      "graphql-language-service-cli",
+      {},
+    );
+  });
+
+  it("refuses a managed server whose peer contract does not support GraphQL 17", async () => {
+    await expectAsync(
+      installServer({ storagePath, version: "3.5.0", api, signal }),
+    ).toBeRejectedWithError(/CLI 4/);
+    expect(api.npmInstallPackage).not.toHaveBeenCalled();
   });
 
   it("cancels before installing the CLI when the runtime installation is interrupted", async () => {

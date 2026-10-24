@@ -6,7 +6,7 @@ Registers the bundled GraphQL Language Service with `ide`, providing schema-awar
 
 ## Features
 
-- **Bundled server**: pins `graphql-language-service-cli` and its compatible GraphQL runtime exactly, with an optional custom executable path.
+- **Bundled server**: pins GraphQL 17 and the compatible GraphQL Language Service CLI 4 release candidate exactly, with an optional custom executable path.
 - **Managed upgrade**: installs a newer server from npm when you want one, and removing it returns to the bundled copy.
 - **Schema intelligence**: validates operations and schema definitions and completes fields, arguments, types, directives, and variables.
 - **Navigation and documentation**: follows schema fields, types, and fragments and shows their documentation on hover.
@@ -28,7 +28,7 @@ Install `ide` first.
 
 ## Usage
 
-Bundled and managed npm installations keep the official upstream server and use the same dependency policy. See [dependency security](docs/security.md) for the tested fixes and the accepted upstream exception.
+Bundled and managed npm installations use GraphQL 17 with the official CLI 4 server and the same dependency policy. Managed discovery selects the upstream `rc` channel until a compatible stable CLI is available. Remove an older managed CLI 3 installation and install it again before using this adapter. See [dependency security](docs/security.md) for the tested fixes and audit policy.
 
 ## Services
 

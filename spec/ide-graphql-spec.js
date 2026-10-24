@@ -1,7 +1,7 @@
 const { serverContext } = require("./helpers/server-context");
 const fs = require("fs");
 const path = require("path");
-const main = require("../lib/main");
+let main = require("../lib/main");
 const { resolveServer: resolveServerWithContext } = require("../lib/server");
 const resolveServer = (configuredPath, rootPath, managedServer = null) =>
   resolveServerWithContext(serverContext({ rootPath, managedServer }), configuredPath);
@@ -41,11 +41,11 @@ describe("ide-graphql server resolution", () => {
     expect(path.basename(launch.args[0])).toBe("start-server.js");
     expect(fs.existsSync(launch.args[0])).toBe(true);
     expect(launch.env.ELECTRON_RUN_AS_NODE).toBe("1");
-    expect(require("graphql-language-service-cli/package.json").version).toBe("3.5.0");
-    expect(require("graphql/package.json").version).toBe("16.14.2");
+    expect(require("graphql-language-service-cli/package.json").version).toBe("4.0.0-rc.2");
+    expect(require("graphql").version).toBe("17.0.2");
   });
 
-  it("routes a managed install through the bundled runtime-safe shim", async () => {
+  it("starts the exact managed generation through the public server API", async () => {
     const directory = path.resolve(__dirname, "..");
     const managed = {
       directory,
@@ -55,7 +55,7 @@ describe("ide-graphql server resolution", () => {
         "graphql-language-service-cli",
         "package.json",
       ),
-      version: "3.5.0",
+      version: "4.0.0-rc.2",
     };
     const launch = await resolveServer("", __dirname, managed);
     expect(launch.command).toBe(process.execPath);
@@ -64,7 +64,7 @@ describe("ide-graphql server resolution", () => {
       __dirname,
       managed.modulePath,
     ]);
-    expect(launch.version).toBe("3.5.0");
+    expect(launch.version).toBe("4.0.0-rc.2");
   });
 
   it("refuses a missing managed CLI instead of running the bundled copy", async () => {
@@ -83,7 +83,7 @@ describe("ide-graphql adapter", () => {
   let disposable;
 
   beforeEach(async () => {
-    await lumine.packages.activatePackage("ide-graphql");
+    main = (await lumine.packages.activatePackage("ide-graphql")).mainModule;
     ({ adapter, disposable } = registerAdapter());
   });
 
@@ -221,11 +221,11 @@ describe("ide-graphql package assets", () => {
 
   it("pins both runtime dependencies exactly", () => {
     expect(pkg.dependencies).toEqual({
-      graphql: "16.14.2",
-      "graphql-language-service-cli": "3.5.0",
+      graphql: "17.0.2",
+      "graphql-language-service-cli": "4.0.0-rc.2",
     });
     for (const version of Object.values(pkg.dependencies))
-      expect(version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
   });
 
   it("declares every setting read by the adapter", () => {
