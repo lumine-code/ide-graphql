@@ -15,6 +15,6 @@ The CLI 4 release candidate still includes loaders that use APIs removed by `@gr
 
 ## Audit policy
 
-The GraphQL 17 and CLI 4 migration removes the old vulnerable braces dependency path. Full and production-only npm audits reported no vulnerabilities when this dependency tree was qualified on October 25, 2026.
+Full and production-only npm audits reported no vulnerabilities when this dependency tree was qualified on October 25, 2026. The tree still includes `braces` 3.0.3: GitHub [withdrew GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) on October 23, 2026 because it was not practically exploitable. The cleared audit reflects that advisory withdrawal; it is not evidence that this migration removed braces or fixed its recursion behavior.
 
 CI runs `npm run audit:check` and rejects every reported advisory. There are no accepted advisory exceptions.
