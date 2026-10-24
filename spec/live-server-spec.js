@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { fileURLToPath } = require("url");
-const main = require("../lib/main");
+let main = require("../lib/main");
 const {
   LiveLspClient,
   fileUri,
@@ -40,7 +40,7 @@ describe("ide-graphql bundled server", () => {
 
   beforeEach(async () => {
     jasmine.useRealClock();
-    await lumine.packages.activatePackage("ide-graphql");
+    main = (await lumine.packages.activatePackage("ide-graphql")).mainModule;
     ({ adapter, disposable } = registerAdapter());
     rootPath = fs.mkdtempSync(path.join(os.tmpdir(), "ide-graphql-live-"));
     fs.cpSync(path.join(__dirname, "fixtures", "drive"), rootPath, {
@@ -61,7 +61,7 @@ describe("ide-graphql bundled server", () => {
     await lumine.packages.deactivatePackage("ide-graphql");
   });
 
-  it("starts through the managed install directory with the runtime-safe shim", async () => {
+  it("starts the selected managed CLI 4 generation through the public server API", async () => {
     const directory = process.env.LUMINE_TEST_GRAPHQL_MANAGED_PATH || path.resolve(__dirname, "..");
     const managedServer = {
       directory,
@@ -71,7 +71,7 @@ describe("ide-graphql bundled server", () => {
         "graphql-language-service-cli",
         "package.json",
       ),
-      version: "3.5.0",
+      version: "4.0.0-rc.2",
     };
     const managedAdapter = {
       ...adapter,
@@ -83,7 +83,7 @@ describe("ide-graphql bundled server", () => {
     expect(capabilities.completionProvider).toBeDefined();
     const launch = await managedAdapter.resolveServer(serverContext({ rootPath }));
     expect(launch.args).toContain(managedServer.modulePath);
-    expect(launch.version).toBe("3.5.0");
+    expect(launch.version).toBe("4.0.0-rc.2");
   });
 
   it("advertises every protocol feature and requests both settings sections", async () => {
