@@ -41,7 +41,7 @@ describe("ide-graphql server resolution", () => {
     expect(path.basename(launch.args[0])).toBe("start-server.js");
     expect(fs.existsSync(launch.args[0])).toBe(true);
     expect(launch.env.ELECTRON_RUN_AS_NODE).toBe("1");
-    expect(require("graphql-language-service-cli/package.json").version).toBe("4.0.0-rc.2");
+    expect(require("graphql-language-service-cli/package.json").version).toBe("4.0.1");
     expect(require("graphql").version).toBe("17.0.2");
   });
 
@@ -55,7 +55,7 @@ describe("ide-graphql server resolution", () => {
         "graphql-language-service-cli",
         "package.json",
       ),
-      version: "4.0.0-rc.2",
+      version: "4.0.1",
     };
     const launch = await resolveServer("", __dirname, managed);
     expect(launch.command).toBe(process.execPath);
@@ -64,7 +64,7 @@ describe("ide-graphql server resolution", () => {
       __dirname,
       managed.modulePath,
     ]);
-    expect(launch.version).toBe("4.0.0-rc.2");
+    expect(launch.version).toBe("4.0.1");
   });
 
   it("refuses a missing managed CLI instead of running the bundled copy", async () => {
@@ -222,7 +222,7 @@ describe("ide-graphql package assets", () => {
   it("pins both runtime dependencies exactly", () => {
     expect(pkg.dependencies).toEqual({
       graphql: "17.0.2",
-      "graphql-language-service-cli": "4.0.0-rc.2",
+      "graphql-language-service-cli": "4.0.1",
     });
     for (const version of Object.values(pkg.dependencies))
       expect(version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);

@@ -71,7 +71,7 @@ describe("ide-graphql bundled server", () => {
         "graphql-language-service-cli",
         "package.json",
       ),
-      version: "4.0.0-rc.2",
+      version: "4.0.1",
     };
     const managedAdapter = {
       ...adapter,
@@ -83,7 +83,7 @@ describe("ide-graphql bundled server", () => {
     expect(capabilities.completionProvider).toBeDefined();
     const launch = await managedAdapter.resolveServer(serverContext({ rootPath }));
     expect(launch.args).toContain(managedServer.modulePath);
-    expect(launch.version).toBe("4.0.0-rc.2");
+    expect(launch.version).toBe("4.0.1");
   });
 
   it("advertises every protocol feature and requests both settings sections", async () => {
