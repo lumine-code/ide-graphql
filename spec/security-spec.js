@@ -35,7 +35,7 @@ describe("GraphQL managed dependency policy", () => {
     const result = await installServer({ storagePath, version: "4.0.0-rc.2", api, signal });
     expect(api.npmPackageLatestVersion).not.toHaveBeenCalled();
     expect(api.npmInstallPackage.calls.allArgs()).toEqual([
-      ["graphql", "17.0.2", storagePath, { signal }],
+      ["graphql", "17.1.0", storagePath, { signal }],
       ["graphql-language-service-cli", "4.0.0-rc.2", storagePath, { signal }],
     ]);
     expect(result).toEqual({

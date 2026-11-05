@@ -42,7 +42,7 @@ describe("ide-graphql server resolution", () => {
     expect(fs.existsSync(launch.args[0])).toBe(true);
     expect(launch.env.ELECTRON_RUN_AS_NODE).toBe("1");
     expect(require("graphql-language-service-cli/package.json").version).toBe("4.0.1");
-    expect(require("graphql").version).toBe("17.0.2");
+    expect(require("graphql").version).toBe("17.1.0");
   });
 
   it("starts the exact managed generation through the public server API", async () => {
@@ -221,7 +221,7 @@ describe("ide-graphql package assets", () => {
 
   it("pins both runtime dependencies exactly", () => {
     expect(pkg.dependencies).toEqual({
-      graphql: "17.0.2",
+      graphql: "17.1.0",
       "graphql-language-service-cli": "4.0.1",
     });
     for (const version of Object.values(pkg.dependencies))
