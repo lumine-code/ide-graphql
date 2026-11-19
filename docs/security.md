@@ -7,7 +7,7 @@ Bundled and managed npm installations use these exact dependency overrides. Mana
 | Dependency                                   | Version | Fixed advisory                                                                                    |
 | -------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------- |
 | @graphql-tools/utils                         | 12.0.3  | [Prototype pollution in mergeDeep](https://github.com/advisories/GHSA-7mx3-vvmw-hjmv)             |
-| source-map-js                                | 1.2.2   | [Invalid indexed source-map offsets](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)           |
+| source-map-js                                | 1.2.3   | [Invalid indexed source-map offsets](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)           |
 | minimatch in graphql-config                  | 11.0.4  | [Glob-pattern preprocessing denial of service](https://github.com/advisories/GHSA-g3hv-75wg-m249) |
 | minimatch in ESLint and @eslint/config-array | 11.0.4  | [Glob-pattern preprocessing denial of service](https://github.com/advisories/GHSA-g3hv-75wg-m249) |
 
