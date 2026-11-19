@@ -18,6 +18,8 @@ Registers the bundled GraphQL Language Service with `ide`, providing schema-awar
 
 Whole-document symbols belong to GraphQL buffers. GraphQL template literals retain completion, hover and navigation inside their JavaScript, TypeScript or Vue host, whose document symbols come from the host language. Workspace symbol search remains available for GraphQL config projects.
 
+Opening a GraphQL file can start a server for its project. Opening JavaScript, TypeScript or Vue starts a server when a GraphQL configuration is discovered or when explicit server or configuration settings are present.
+
 ![GraphQL validates a query against the local schema and flags an unknown field.](.github/demo.png)
 
 ## Installation

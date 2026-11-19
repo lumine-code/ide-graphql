@@ -1,5 +1,6 @@
 const { serverContext } = require("./helpers/server-context");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 let main = require("../lib/main");
 const { resolveServer: resolveServerWithContext } = require("../lib/server");
@@ -111,6 +112,57 @@ describe("ide-graphql adapter", () => {
     expect(launch.cwd).toBe(__dirname);
     expect(launch.transport).toBe("stdio");
     expect(launch.args).toContain(__dirname);
+  });
+
+  it("starts from embedded sources only when a project config is discoverable", async () => {
+    const directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), "ide-graphql-discovery-"));
+    const rootPath = path.join(directory, "workspace");
+    const host = { getGrammar: () => ({ scopeName: "source.ts" }) };
+    const graphql = { getGrammar: () => ({ scopeName: "source.graphql" }) };
+    const shouldStart = (editor = host) => adapter.shouldStartForEditor(editor, { rootPath });
+    try {
+      await fs.promises.mkdir(rootPath);
+      expect(await shouldStart()).toBeFalse();
+      expect(await shouldStart(graphql)).toBeTrue();
+      const manifest = path.join(directory, "package.json");
+      await fs.promises.writeFile(manifest, '{"name":"fixture"}');
+      expect(await shouldStart()).toBeFalse();
+      await fs.promises.writeFile(manifest, '{"graphql":{"schema":"schema.graphql"}}');
+      expect(await shouldStart()).toBeTrue();
+      await fs.promises.unlink(manifest);
+      await fs.promises.writeFile(path.join(rootPath, ".graphqlconfig.json"), "{}");
+      expect(await shouldStart()).toBeTrue();
+      lumine.config.set("ide-graphql.config.legacy", false);
+      expect(await shouldStart()).toBeFalse();
+      await fs.promises.writeFile(path.join(rootPath, "graphql.config.ts"), "throw new Error()");
+      expect(await shouldStart()).toBeTrue();
+      await fs.promises.unlink(path.join(rootPath, "graphql.config.ts"));
+      await fs.promises.writeFile(
+        path.join(rootPath, "package.json"),
+        '{"cosmiconfig":{"searchPlaces":["custom.yml"]}}',
+      );
+      expect(await shouldStart()).toBeTrue();
+    } finally {
+      lumine.config.unset("ide-graphql.config.legacy");
+      await fs.promises.rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it("honors explicit server and GraphQL config settings for host files", async () => {
+    const host = { getGrammar: () => ({ scopeName: "text.html.vue" }) };
+    const rootPath = path.join(os.tmpdir(), "no-graphql-config");
+    for (const [key, value] of [
+      ["serverPath", "custom-server"],
+      ["config.filePath", "nested/custom.yaml"],
+      ["config.configName", "platform"],
+    ]) {
+      lumine.config.set(`ide-graphql.${key}`, value);
+      try {
+        expect(await adapter.shouldStartForEditor(host, { rootPath })).toBeTrue();
+      } finally {
+        lumine.config.unset(`ide-graphql.${key}`);
+      }
+    }
   });
 
   it("keeps both native namespaces in the canonical settings tree", () => {
