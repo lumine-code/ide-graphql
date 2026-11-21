@@ -98,9 +98,22 @@ describe("GraphQL patched runtime dependencies", () => {
   const serverRequire = createRequire(
     cliRequire.resolve("graphql-language-service-server/package.json"),
   );
+  const configRequire = createRequire(serverRequire.resolve("graphql-config"));
+
+  it("uses GraphQL Tools 13 or newer in configuration and both server loaders", () => {
+    for (const name of [
+      "graphql-config",
+      "@graphql-tools/load",
+      "@graphql-tools/code-file-loader",
+    ]) {
+      const loaderRequire = createRequire(serverRequire.resolve(name));
+      const { version } = loaderRequire("@graphql-tools/utils/package.json");
+      expect(Number.parseInt(version, 10)).withContext(name).toBeGreaterThanOrEqual(13);
+    }
+  });
 
   it("does not merge prototype-chain keys into the process's Object prototype", () => {
-    const { mergeDeep } = serverRequire("@graphql-tools/utils");
+    const { mergeDeep } = configRequire("@graphql-tools/utils");
     try {
       const merged = mergeDeep([
         { valid: { value: 1 } },

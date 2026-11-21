@@ -3,6 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { fileURLToPath } = require("url");
+const { buildSchema, introspectionFromSchema } = require("graphql");
 let main = require("../lib/main");
 const {
   LiveLspClient,
@@ -24,6 +25,23 @@ const registerAdapter = () => {
   });
   return { adapter, disposable };
 };
+
+function waitForQueryDiagnostic(client, rootPath, label) {
+  const filePath = path.join(rootPath, "query.graphql");
+  const uri = fileUri(filePath);
+  client.open(uri, "graphql", fs.readFileSync(filePath, "utf8"));
+  return client.waitFor(
+    () =>
+      client
+        .messages("textDocument/publishDiagnostics")
+        .some(
+          ({ params }) =>
+            params.uri === uri &&
+            params.diagnostics.some(({ message }) => message.includes("unknownField")),
+        ),
+    label,
+  );
+}
 
 describe("ide-graphql bundled server", () => {
   let adapter, client, disposable, rootPath;
@@ -84,6 +102,7 @@ describe("ide-graphql bundled server", () => {
     const launch = await managedAdapter.resolveServer(serverContext({ rootPath }));
     expect(launch.args).toContain(managedServer.modulePath);
     expect(launch.version).toBe("4.0.1");
+    await waitForQueryDiagnostic(client, rootPath, "managed schema validation");
   });
 
   it("advertises every protocol feature and requests both settings sections", async () => {
@@ -278,6 +297,23 @@ describe("ide-graphql bundled server", () => {
     );
     expect(diagnostics.map(({ message }) => message).join("\n")).toContain("unknownField");
   });
+
+  for (const [filename, schemaContents] of [
+    ["schema.json", (sdl) => JSON.stringify(introspectionFromSchema(buildSchema(sdl)))],
+    ["schema.ts", (sdl) => `export const schema = /* GraphQL */ \`\n${sdl}\`;\n`],
+  ]) {
+    it(`validates operations against the schema loaded from ${filename}`, async () => {
+      const configPath = path.join(rootPath, ".graphqlrc.json");
+      const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+      const sdl = fs.readFileSync(path.join(rootPath, config.schema), "utf8");
+      fs.writeFileSync(path.join(rootPath, filename), schemaContents(sdl));
+      config.schema = filename;
+      fs.writeFileSync(configPath, JSON.stringify(config));
+
+      await client.start();
+      await waitForQueryDiagnostic(client, rootPath, `schema validation using ${filename}`);
+    });
+  }
 
   it("reloads changed workspace configuration through the nonstandard section split", async () => {
     await client.start();
